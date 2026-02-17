@@ -138,7 +138,6 @@ function App() {
     if (appState !== 'READY' || !isOnline) return;
 
     const checkAndGenerateWeeklyTip = async () => {
-      // Get current date in Nigeria (WAT, UTC+1)
       const now = new Date();
       const nigeriaTime = new Intl.DateTimeFormat('en-GB', {
         timeZone: 'Africa/Lagos',
@@ -154,9 +153,8 @@ function App() {
       nigeriaTime.forEach(p => parts[p.type] = p.value);
 
       const hour = parseInt(parts.hour);
-      const dayOfWeek = now.getDay(); // 1 = Monday
+      const dayOfWeek = now.getDay(); 
       
-      // Calculate a "Week Identifier" (e.g., Year-WeekNumber)
       const oneJan = new Date(now.getFullYear(), 0, 1);
       const numberOfDays = Math.floor((now.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
       const weekNumber = Math.ceil((now.getDay() + 1 + numberOfDays) / 7);
@@ -164,7 +162,6 @@ function App() {
 
       const lastGeneratedWeek = localStorage.getItem('security_last_tip_week');
 
-      // Condition: Monday at or after 7 AM, and not generated yet this week
       if (dayOfWeek >= 1 && (dayOfWeek > 1 || hour >= 7) && lastGeneratedWeek !== weekKey) {
         setIsTipLoading(true);
         try {
@@ -194,21 +191,6 @@ function App() {
 
     checkAndGenerateWeeklyTip();
   }, [appState, isOnline, weeklyTips]);
-
-  const highlightMatch = (text: string, query: string) => {
-    if (!query) return <>{text}</>;
-    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const parts = text.split(new RegExp(`(${escapedQuery})`, 'gi'));
-    return (
-      <>
-        {parts.map((part, i) => 
-          part.toLowerCase() === query.toLowerCase() 
-            ? <span key={i} className="text-blue-400 font-bold underline decoration-blue-400/30 underline-offset-4">{part}</span> 
-            : part
-        )}
-      </>
-    );
-  };
 
   const handleToolkitFileUpload = (templateId: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -267,7 +249,7 @@ function App() {
       }
     };
     checkAndSyncSocial();
-    const interval = setInterval(checkAndSyncSocial, 60000 * 5); // Check every 5 mins
+    const interval = setInterval(checkAndSyncSocial, 60000 * 5); 
     return () => clearInterval(interval);
   }, [appState, socialIntel, lastSocialSync, isOnline]);
 
@@ -730,19 +712,6 @@ function App() {
 
   const renderReportAnalyzer = () => (
     <div className="max-w-4xl mx-auto space-y-8 pb-20">
-      {!isOnline && (
-        <div className="bg-red-900/20 border border-red-500/30 p-5 rounded-[2rem] flex items-center justify-between shadow-xl animate-in slide-in-from-top-4 duration-300">
-          <div className="flex items-center gap-5">
-            <div className="bg-red-500 p-3 rounded-2xl"><WifiOff className="text-white" size={24} /></div>
-            <div>
-              <h4 className="font-bold text-white">Offline Tactical Mode</h4>
-              <p className="text-xs text-red-200 opacity-80">Reports will be logged locally and analyzed using cached logic.</p>
-            </div>
-          </div>
-          <button onClick={() => window.location.reload()} className="bg-red-500/10 hover:bg-red-500/20 text-red-500 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all">Sync Link</button>
-        </div>
-      )}
-
       <div className="bg-[#1b2537] p-8 rounded-[2.5rem] border border-slate-700/50 shadow-xl overflow-hidden">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-10">
           <div className="flex items-center gap-5">
@@ -794,7 +763,6 @@ function App() {
 
   const renderTrainingView = () => (
     <div className="max-w-7xl mx-auto h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-6 pb-4">
-      {/* Left Selection Panel */}
       <div className="w-full lg:w-96 flex flex-col gap-6 overflow-y-auto scrollbar-hide pr-1">
         <div className="bg-[#1b2537] p-8 rounded-[2.5rem] border border-slate-700/50 shadow-xl flex flex-col gap-8">
           <div className="flex justify-between items-center">
@@ -810,7 +778,6 @@ function App() {
             </button>
           </div>
 
-          {/* Search Input */}
           <div className="space-y-3">
              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Core Security Domain Search</label>
              <div className="relative">
@@ -836,7 +803,6 @@ function App() {
              </div>
           </div>
 
-          {/* Training Level */}
           <div className="space-y-3">
              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Training Level</label>
              <div className="flex bg-[#0a0f1a] p-1.5 rounded-2xl border border-slate-800">
@@ -852,7 +818,6 @@ function App() {
              </div>
           </div>
 
-          {/* Target Role Focus Dropdown */}
           <div className="space-y-3">
              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Target Role Focus</label>
              <div className="relative group">
@@ -871,7 +836,6 @@ function App() {
              </div>
           </div>
 
-          {/* Action Button */}
           <button 
             onClick={handleGenerateTraining} 
             disabled={isTrainingLoading || !trainingTopic.trim()} 
@@ -881,7 +845,6 @@ function App() {
           </button>
         </div>
 
-        {/* Localized Library Section */}
         <div className="bg-[#1b2537] p-8 rounded-[2.5rem] border border-slate-700/50 shadow-xl">
            <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-3 mb-6"><Database size={16} /> Localized Library</h3>
            <div className="space-y-3">
@@ -893,7 +856,6 @@ function App() {
         </div>
       </div>
 
-      {/* Right Content Panel */}
       <div className="flex-1 flex flex-col gap-6 overflow-hidden">
         <div className="bg-[#1b2537] rounded-[3rem] border border-slate-700/50 overflow-hidden shadow-2xl flex flex-col flex-1">
           <div className="p-8 bg-slate-900/40 border-b border-slate-700/50 flex justify-between items-center">
@@ -1109,22 +1071,22 @@ function App() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {STATIC_TEMPLATES.map((template) => (
-          <div key={template.id} className="bg-[#1b2537] p-8 rounded-[2.5rem] border border-slate-700/50 shadow-xl flex flex-col h-full group transition-all duration-300 hover:scale-[1.02] hover:border-blue-500/50 hover:shadow-[0_0_25px_rgba(37,99,235,0.2)]">
+          <div key={template.id} className="bg-[#1b2537] p-8 rounded-[2.5rem] border border-slate-700/50 shadow-xl flex flex-col h-full group transition-all duration-300 hover:scale-[1.03] hover:border-blue-500/60 hover:shadow-[0_0_35px_rgba(37,99,235,0.25)] ring-offset-slate-900 active:scale-[0.98]">
             <div className="flex justify-between items-start mb-6">
-              <div className="p-4 rounded-2xl bg-blue-500/10 text-blue-400">
+              <div className="p-4 rounded-2xl bg-blue-500/10 text-blue-400 transition-colors group-hover:bg-blue-600 group-hover:text-white">
                 <FileText size={28} />
               </div>
               <ShareButton content={template.content} title={template.title} />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">{template.title}</h3>
-            <p className="text-slate-400 text-sm mb-8 flex-1">{template.description}</p>
+            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{template.title}</h3>
+            <p className="text-slate-400 text-sm mb-8 flex-1 leading-relaxed">{template.description}</p>
             
-            <div className="space-y-3">
-              <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-800 font-mono text-[10px] text-slate-500 overflow-hidden text-ellipsis whitespace-pre line-clamp-3">
+            <div className="space-y-4">
+              <div className="p-5 bg-slate-900/60 rounded-2xl border border-slate-800 font-mono text-[10px] text-slate-500 overflow-hidden text-ellipsis whitespace-pre line-clamp-3 group-hover:border-slate-700 group-hover:bg-slate-900/80 transition-all">
                 {template.content}
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <button 
                   onClick={() => {
                     const blob = new Blob([template.content], { type: 'text/plain' });
@@ -1135,14 +1097,14 @@ function App() {
                     a.click();
                     URL.revokeObjectURL(url);
                   }}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
                 >
                   <Download size={14} /> Download
                 </button>
                 <button 
                   onClick={() => fileInputRefs.current[template.id]?.click()}
                   disabled={uploadingTemplateId === template.id}
-                  className="flex-1 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                  className="flex-1 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-md"
                 >
                   {uploadingTemplateId === template.id ? <RefreshCw size={14} className="animate-spin" /> : <Upload size={14} />}
                   Sync Local
@@ -1191,6 +1153,20 @@ function App() {
     );
   }
 
+  const getViewTitle = () => {
+    switch (currentView) {
+      case View.DASHBOARD: return 'Dashboard';
+      case View.SOCIAL_TRENDS: return 'Trending Intelligence';
+      case View.ADVISOR: return 'AI Executive Advisor';
+      case View.WEEKLY_TIPS: return 'Weekly Focus Archive';
+      case View.BEST_PRACTICES: return 'Global Intelligence';
+      case View.TRAINING: return 'Tactical Training Engine';
+      case View.REPORT_ANALYZER: return 'Intelligence Log';
+      case View.TOOLKIT: return 'Operations Vault';
+      default: return 'AntiRisk Management';
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-[#0a0f1a] text-slate-100 font-inter">
       <Navigation 
@@ -1202,46 +1178,81 @@ function App() {
         socialBadge={socialIntel?.notifications.filter(n => n.priority === 'high').length}
       />
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <div className="p-6 border-b border-slate-800/40 flex justify-between items-center bg-[#0a0f1a]/95 backdrop-blur-md z-20">
-          <div className="flex items-center gap-4">
+        <header className="p-5 border-b border-slate-800/40 flex justify-between items-center bg-[#0a0f1a]/80 backdrop-blur-xl z-20 sticky top-0">
+          <div className="flex items-center gap-6">
             {currentView !== View.DASHBOARD && (
               <button 
                 onClick={() => setCurrentView(View.DASHBOARD)}
-                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700/50 group"
+                className="flex items-center gap-2.5 text-blue-400 hover:text-white transition-all bg-blue-500/10 hover:bg-blue-600 px-4 py-2 rounded-xl border border-blue-500/20 group shadow-lg shadow-blue-500/5 active:scale-95"
               >
                 <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                <span className="text-sm font-bold">Dashboard</span>
+                <span className="text-xs font-black uppercase tracking-widest">Dashboard</span>
               </button>
             )}
-            <h1 className="font-bold text-xl sm:text-2xl text-white hidden sm:block">AntiRisk Security</h1>
+            <div className="flex flex-col">
+              <h1 className="font-black text-lg sm:text-2xl text-white tracking-tight leading-tight">{getViewTitle()}</h1>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">AntiRisk Strategic Access</span>
+              </div>
+            </div>
           </div>
-          <div className="lg:hidden">
-            <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 text-white bg-slate-800/50 rounded-xl"><Menu size={28} /></button>
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-lg border border-slate-800/40">
+              <ShieldCheck size={14} className="text-blue-400" />
+              <span className="text-[10px] font-bold text-slate-400">Vault Level: Alpha</span>
+            </div>
+            <div className="lg:hidden">
+              <button onClick={() => setIsMobileMenuOpen(true)} className="p-2.5 text-white bg-slate-800/50 rounded-xl hover:bg-slate-700 transition-colors"><Menu size={24} /></button>
+            </div>
           </div>
-        </div>
+        </header>
+
         <div className="flex-1 overflow-y-auto p-4 sm:p-12 scrollbar-hide">
           {currentView === View.DASHBOARD && renderDashboard()}
           {currentView === View.SOCIAL_TRENDS && renderSocialTrends()}
           {currentView === View.ADVISOR && (
-            <div className="flex flex-col h-full max-w-4xl mx-auto bg-slate-800/50 rounded-3xl border border-slate-700/50 overflow-hidden shadow-xl">
-               <div className="p-6 border-b border-slate-700/50 bg-slate-900/40 flex justify-between items-center">
-                 <h2 className="font-bold text-white flex items-center gap-3"><ShieldAlert className="text-blue-400" size={24} /> Executive Advisor</h2>
-                 <button onClick={() => setShowKbModal(true)} className="text-xs font-bold text-blue-400 bg-blue-400/10 px-4 py-2 rounded-xl">Policy Archives</button>
+            <div className="flex flex-col h-full max-w-4xl mx-auto bg-[#111827]/50 rounded-[2.5rem] border border-slate-800/50 overflow-hidden shadow-2xl">
+               <div className="p-6 border-b border-slate-800/50 bg-[#1f2937]/30 flex justify-between items-center backdrop-blur-md">
+                 <div className="flex items-center gap-4">
+                   <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-900/40">
+                     <ShieldAlert className="text-white" size={22} />
+                   </div>
+                   <div>
+                     <h2 className="font-black text-white text-lg tracking-tight">Executive Advisor</h2>
+                     <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Always-on Intelligence</p>
+                   </div>
+                 </div>
+                 <button onClick={() => setShowKbModal(true)} className="text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-400/10 px-5 py-2.5 rounded-xl border border-blue-400/20 hover:bg-blue-400/20 transition-all shadow-inner">Policy Archives</button>
                </div>
-               <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
+               <div className="flex-1 overflow-y-auto p-8 space-y-8 scrollbar-hide">
                  {messages.map(msg => (
                    <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                     <div className={`max-w-[85%] p-5 rounded-2xl ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-br-none shadow-lg' : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700'}`}>
+                     <div className={`max-w-[85%] p-6 rounded-[1.75rem] shadow-xl ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-br-none shadow-blue-900/20' : 'bg-slate-800/80 text-slate-100 rounded-bl-none border border-slate-700/50 backdrop-blur-sm'}`}>
                        <MarkdownRenderer content={msg.text} />
                      </div>
                    </div>
                  ))}
-                 {isAdvisorThinking && <div className="flex gap-2 p-4 bg-slate-800 rounded-xl w-fit animate-pulse"><div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div><div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-100"></div></div>}
+                 {isAdvisorThinking && (
+                   <div className="flex gap-2 p-6 bg-slate-800/40 rounded-2xl w-fit animate-pulse border border-slate-700/50">
+                     <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-bounce"></div>
+                     <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-bounce delay-100"></div>
+                     <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-bounce delay-200"></div>
+                   </div>
+                 )}
                  <div ref={chatEndRef} />
                </div>
-               <div className="p-6 border-t border-slate-700/50 flex gap-3">
-                 <input value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder="Consult strategic intelligence..." className="flex-1 bg-slate-900/50 border border-slate-700 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors" />
-                 <button onClick={handleSendMessage} className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl shadow-lg active:scale-95 flex items-center justify-center"><Send size={24} /></button>
+               <div className="p-8 border-t border-slate-800/50 flex gap-4 bg-slate-900/20 backdrop-blur-md">
+                 <input 
+                  value={inputMessage} 
+                  onChange={(e) => setInputMessage(e.target.value)} 
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} 
+                  placeholder="Consult strategic intelligence..." 
+                  className="flex-1 bg-slate-900/60 border border-slate-800 rounded-[1.25rem] px-8 py-5 text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-slate-700 font-medium text-base shadow-inner" 
+                 />
+                 <button onClick={handleSendMessage} className="bg-blue-600 hover:bg-blue-700 text-white p-5 rounded-[1.25rem] shadow-xl shadow-blue-900/40 active:scale-95 flex items-center justify-center transition-all">
+                   <Send size={28} />
+                 </button>
                </div>
             </div>
           )}
@@ -1255,7 +1266,10 @@ function App() {
         {showKbModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in">
             <div className="bg-[#1b2537] rounded-[3rem] border border-slate-700/50 p-10 w-full max-w-2xl shadow-2xl">
-              <div className="flex justify-between items-center mb-10"><h2 className="text-3xl font-bold text-white flex items-center gap-4"><Database className="text-emerald-400" size={32}/> Policy Archives</h2><button onClick={() => setShowKbModal(false)} className="p-2 bg-slate-900/50 rounded-full text-slate-500 hover:text-white transition-colors"><X size={28}/></button></div>
+              <div className="flex justify-between items-center mb-10">
+                <h2 className="text-3xl font-bold text-white flex items-center gap-4"><Database className="text-emerald-400" size={32}/> Policy Archives</h2>
+                <button onClick={() => setShowKbModal(false)} className="p-2.5 bg-slate-900/50 rounded-full text-slate-500 hover:text-white transition-colors"><X size={28}/></button>
+              </div>
               <div className="space-y-6">
                 <input value={newDocTitle} onChange={(e) => setNewDocTitle(e.target.value)} placeholder="Protocol Title..." className="w-full bg-slate-900/50 border border-slate-700/50 p-5 rounded-2xl outline-none text-white focus:border-blue-500 text-lg transition-colors" />
                 <textarea value={newDocContent} onChange={(e) => setNewDocContent(e.target.value)} placeholder="Paste site policy text..." className="w-full bg-slate-900/50 border border-slate-700/50 p-6 rounded-2xl h-64 outline-none resize-none text-white focus:border-blue-500 text-lg transition-colors" />
